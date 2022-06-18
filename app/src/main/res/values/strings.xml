@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">CalendarEvents</string>
+    <string name="permission_denied_title">Can\'t proceed!</string>
+    <string name="permission_denied_message">Can\'t proceed without the necessary permissions!</string>
+    <string name="permission_denied_ok">OK</string>
+    <string name="required_permissions_title">Permissions Required</string>
+    <string name="required_permissions_message">The following permissions are needed in order to proceed:\n%s</string>
+    <string name="required_permissions_ok">OK</string>
+    <string name="required_permissions_cancel">Cancel</string>
 </resources>
