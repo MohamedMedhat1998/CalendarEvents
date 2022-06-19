@@ -7,4 +7,8 @@
     <string name="required_permissions_message">The following permissions are needed in order to proceed:\n%s</string>
     <string name="required_permissions_ok">OK</string>
     <string name="required_permissions_cancel">Cancel</string>
+    <string name="read_calendar_permission_name">Read Calendar</string>
+    <string name="write_calendar_permission_name">Write Calendar</string>
+    <string name="generate_events">Generate events</string>
+    <string name="delete_events">Delete Events</string>
 </resources>
