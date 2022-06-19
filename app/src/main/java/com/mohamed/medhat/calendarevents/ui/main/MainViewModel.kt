@@ -62,12 +62,25 @@ class MainViewModel @Inject constructor(
 
     /**
      * Creates random events in the calendar.
+     * @param activity The activity hosting the creation process.
      */
     fun createRandomEvents(activity: BaseActivity) {
         withCalendarPermissions(activity) {
             viewModelScope.launch {
                 val events = eventsGenerator.generateRandomEvents(10)
                 calendarHelper.createEvents(calendarId, *events.toTypedArray())
+            }
+        }
+    }
+
+    /**
+     * Deletes all the events created associated with the apps calendar.
+     * @param activity The activity hosting the deletion process.
+     */
+    fun deleteEvents(activity: BaseActivity) {
+        withCalendarPermissions(activity) {
+            viewModelScope.launch {
+                calendarHelper.deleteAllEvents(calendarId)
             }
         }
     }

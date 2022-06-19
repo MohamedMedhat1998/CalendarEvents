@@ -42,4 +42,10 @@ interface CalendarHelper {
      * @param events The list of the events to create.
      */
     suspend fun createEvents(calendarId: Long, vararg events: CalendarEvent)
+
+    /**
+     * Removes all the events that was created by the calendar with the passed id.
+     * @param calendarId The id of the calendar whose events should be deleted.
+     */
+    suspend fun deleteAllEvents(calendarId: Long)
 }

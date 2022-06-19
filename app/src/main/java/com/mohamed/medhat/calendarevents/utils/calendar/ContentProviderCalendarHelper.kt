@@ -11,6 +11,7 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 private const val CALENDAR_ID_COLUMN_INDEX = 0;
+private const val EVENT_ID_COLUMN_INDEX = 0;
 
 /**
  * A [CalendarHelper] implementation that depends on the calendar's [ContentProvider] to perform its job.
@@ -86,19 +87,43 @@ class ContentProviderCalendarHelper @Inject constructor(private val contentResol
     }
 
     override suspend fun createEvents(calendarId: Long, vararg events: CalendarEvent) {
-        val contentValues = events.map {
-            ContentValues().apply {
-                put(CalendarContract.Events.DTSTART, it.dtStart)
-                put(CalendarContract.Events.DTEND, it.dtEnd)
-                put(CalendarContract.Events.TITLE, "Random Event Title")
-                put(CalendarContract.Events.DESCRIPTION, "Random Event Description")
-                put(CalendarContract.Events.EVENT_TIMEZONE, it.eventTimezone)
-                put(CalendarContract.Events.CALENDAR_ID, calendarId)
+        withContext(Dispatchers.IO) {
+            val contentValues = events.map {
+                ContentValues().apply {
+                    put(CalendarContract.Events.DTSTART, it.dtStart)
+                    put(CalendarContract.Events.DTEND, it.dtEnd)
+                    put(CalendarContract.Events.TITLE, "Random Event Title")
+                    put(CalendarContract.Events.DESCRIPTION, "Random Event Description")
+                    put(CalendarContract.Events.EVENT_TIMEZONE, it.eventTimezone)
+                    put(CalendarContract.Events.CALENDAR_ID, calendarId)
+                }
+            }
+            contentResolver.bulkInsert(
+                CalendarContract.Events.CONTENT_URI,
+                contentValues.toTypedArray()
+            )
+        }
+    }
+
+    override suspend fun deleteAllEvents(calendarId: Long) {
+        withContext(Dispatchers.IO) {
+            val cursor = contentResolver.query(
+                CalendarContract.Events.CONTENT_URI,
+                arrayOf(CalendarContract.Events._ID),
+                "${CalendarContract.Events.CALENDAR_ID} = ?",
+                arrayOf(calendarId.toString()),
+                null
+            )
+            if (cursor != null) {
+                while (cursor.moveToNext()) {
+                    contentResolver.delete(
+                        CalendarContract.Events.CONTENT_URI,
+                        "${CalendarContract.Events._ID} = ?",
+                        arrayOf(cursor.getLong(EVENT_ID_COLUMN_INDEX).toString())
+                    )
+                }
+                cursor.close()
             }
         }
-        contentResolver.bulkInsert(
-            CalendarContract.Events.CONTENT_URI,
-            contentValues.toTypedArray()
-        )
     }
 }

@@ -33,5 +33,8 @@ class MainFragment : Fragment(R.layout.fragment_main) {
         binding.btnMainGenerateEvents.setOnClickListener {
             mainViewModel.createRandomEvents(requireActivity() as BaseActivity)
         }
+        binding.btnMainDeleteEvents.setOnClickListener {
+            mainViewModel.deleteEvents(requireActivity() as BaseActivity)
+        }
     }
 }
