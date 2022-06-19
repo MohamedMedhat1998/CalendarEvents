@@ -33,8 +33,9 @@ class MainViewModel @Inject constructor(
     /**
      * Runs the basic initializations for the app's calendar to work.
      * @param activity The activity hosting the initialization process.
+     * @param onInitializationCompleted An optional lambda that will be executed after initialization.
      */
-    fun initCalendar(activity: BaseActivity) {
+    fun initCalendar(activity: BaseActivity, onInitializationCompleted: suspend () -> Unit = {}) {
         withCalendarPermissions(activity) {
             viewModelScope.launch {
                 val queriedCalendarId = calendarHelper.checkCalendar(
@@ -55,6 +56,7 @@ class MainViewModel @Inject constructor(
                 } else {
                     this@MainViewModel.calendarId = queriedCalendarId
                 }
+                onInitializationCompleted.invoke()
                 Log.d(TAG, "initCalendar: id: $calendarId")
             }
         }
@@ -68,7 +70,13 @@ class MainViewModel @Inject constructor(
         withCalendarPermissions(activity) {
             viewModelScope.launch {
                 val events = eventsGenerator.generateRandomEvents(10)
-                calendarHelper.createEvents(calendarId, *events.toTypedArray())
+                if (calendarId == -1L) {
+                    initCalendar(activity) {
+                        calendarHelper.createEvents(calendarId, *events.toTypedArray())
+                    }
+                } else {
+                    calendarHelper.createEvents(calendarId, *events.toTypedArray())
+                }
             }
         }
     }
