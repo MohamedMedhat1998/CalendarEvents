@@ -1,7 +1,6 @@
 package com.mohamed.medhat.calendarevents.utils.calendar
 
-import android.Manifest
-import androidx.annotation.RequiresPermission
+import com.mohamed.medhat.calendarevents.model.CalendarEvent
 
 /**
  * A type that handles the calendar operations.
@@ -36,4 +35,11 @@ interface CalendarHelper {
         calendarAccessLevel: Int,
         ownerAccount: String
     ): Long
+
+    /**
+     * Creates multiple events in the calendar with the passed calendar id.
+     * @param calendarId The id of the calendar to insert the events into.
+     * @param events The list of the events to create.
+     */
+    suspend fun createEvents(calendarId: Long, vararg events: CalendarEvent)
 }

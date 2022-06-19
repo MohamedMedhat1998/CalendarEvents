@@ -5,7 +5,7 @@ import android.content.ContentResolver
 import android.content.ContentValues
 import android.provider.CalendarContract
 import androidx.core.database.getLongOrNull
-import dagger.hilt.android.scopes.ActivityScoped
+import com.mohamed.medhat.calendarevents.model.CalendarEvent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -83,5 +83,22 @@ class ContentProviderCalendarHelper @Inject constructor(private val contentResol
             }
             return@withContext -1
         }
+    }
+
+    override suspend fun createEvents(calendarId: Long, vararg events: CalendarEvent) {
+        val contentValues = events.map {
+            ContentValues().apply {
+                put(CalendarContract.Events.DTSTART, it.dtStart)
+                put(CalendarContract.Events.DTEND, it.dtEnd)
+                put(CalendarContract.Events.TITLE, "Random Event Title")
+                put(CalendarContract.Events.DESCRIPTION, "Random Event Description")
+                put(CalendarContract.Events.EVENT_TIMEZONE, it.eventTimezone)
+                put(CalendarContract.Events.CALENDAR_ID, calendarId)
+            }
+        }
+        contentResolver.bulkInsert(
+            CalendarContract.Events.CONTENT_URI,
+            contentValues.toTypedArray()
+        )
     }
 }

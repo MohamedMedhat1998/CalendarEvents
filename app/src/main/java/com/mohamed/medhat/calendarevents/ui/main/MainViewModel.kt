@@ -11,6 +11,7 @@ import com.mohamed.medhat.calendarevents.di.ProviderCalendarHelper
 import com.mohamed.medhat.calendarevents.ui.BaseActivity
 import com.mohamed.medhat.calendarevents.utils.Constants
 import com.mohamed.medhat.calendarevents.utils.calendar.CalendarHelper
+import com.mohamed.medhat.calendarevents.utils.calendar.RandomEventsGenerator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -21,11 +22,18 @@ private const val TAG = "MainViewModel"
  * An mvvm [ViewModel] for the [MainActivity].
  */
 @HiltViewModel
-class MainViewModel @Inject constructor(@ProviderCalendarHelper private val calendarHelper: CalendarHelper) :
+class MainViewModel @Inject constructor(
+    @ProviderCalendarHelper private val calendarHelper: CalendarHelper,
+    private val eventsGenerator: RandomEventsGenerator
+) :
     ViewModel() {
 
     var calendarId = -1L
 
+    /**
+     * Runs the basic initializations for the app's calendar to work.
+     * @param activity The activity hosting the initialization process.
+     */
     fun initCalendar(activity: BaseActivity) {
         withCalendarPermissions(activity) {
             viewModelScope.launch {
@@ -48,6 +56,18 @@ class MainViewModel @Inject constructor(@ProviderCalendarHelper private val cale
                     this@MainViewModel.calendarId = queriedCalendarId
                 }
                 Log.d(TAG, "initCalendar: id: $calendarId")
+            }
+        }
+    }
+
+    /**
+     * Creates random events in the calendar.
+     */
+    fun createRandomEvents(activity: BaseActivity) {
+        withCalendarPermissions(activity) {
+            viewModelScope.launch {
+                val events = eventsGenerator.generateRandomEvents(10)
+                calendarHelper.createEvents(calendarId, *events.toTypedArray())
             }
         }
     }
